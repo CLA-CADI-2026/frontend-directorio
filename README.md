@@ -5,6 +5,8 @@
 * Pedro Hernández Oregel
 * Roberto Martínez Román
 
+## Video con demostración del funcionamiento
+[Demo Equipo 6](https://youtu.be/-whUfUK38-s)
 
 
 Este repositorio contiene un frontend en HTML, CSS y JavaScript puro para gestionar materias y docentes mediante una API REST.
