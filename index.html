@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directorio - Gestión de Materias y Docentes</title>
+    <style>
+        /* ===== RESET Y ESTILOS BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fa;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #1a3b5d;
+            border-bottom: 3px solid #1a3b5d;
+            padding-bottom: 10px;
+        }
+        /* ===== MENÚ DE TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 8px;
+        }
+        .tab-btn {
+            background: #e9ecef;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: 0.2s;
+            color: #495057;
+        }
+        .tab-btn:hover {
+            background: #d0d7de;
+        }
+        .tab-btn.active {
+            background: #1a3b5d;
+            color: #fff;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== BOTONES ===== */
+        .btn {
+            display: inline-block;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .btn-primary { background: #1a3b5d; color: #fff; }
+        .btn-primary:hover { background: #0f2a42; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-success:hover { background: #1e7e34; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-danger:hover { background: #b02a37; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn-secondary:hover { background: #5a6268; }
+
+        /* ===== TABLAS ===== */
+        .table-wrapper {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 5px 0;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        th {
+            background: #f1f3f5;
+            text-align: left;
+            padding: 14px 12px;
+            font-weight: 600;
+            color: #1a3b5d;
+        }
+        td {
+            padding: 12px;
+            border-top: 1px solid #e9ecef;
+        }
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== FORMULARIOS ===== */
+        .form-card {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin: 25px 0;
+        }
+        .form-card h3 {
+            margin-bottom: 20px;
+            color: #1a3b5d;
+            font-size: 1.25rem;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+        .form-group {
+            flex: 1 1 200px;
+            min-width: 160px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: 0.15s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #1a3b5d;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,59,93,0.15);
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== MENSAJES ===== */
+        .message {
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 6px solid #28a745;
+        }
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 6px solid #dc3545;
+        }
+        .message-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 6px solid #17a2b8;
+        }
+        .message .close-msg {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            padding: 0 6px;
+        }
+        .message .close-msg:hover { opacity: 1; }
+
+        /* ===== UTILIDADES ===== */
+        .mt-2 { margin-top: 20px; }
+        .mb-1 { margin-bottom: 10px; }
+        .text-center { text-align: center; }
+        .text-muted { color: #6c757d; }
+        .hidden { display: none !important; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 700px) {
+            .tabs { flex-direction: column; border-bottom: none; gap: 6px; }
+            .tab-btn { border-radius: 6px; text-align: left; }
+            .form-row { flex-direction: column; gap: 12px; }
+            .form-group { flex: 1 1 100%; }
+            .actions-cell { flex-direction: column; }
+            .actions-cell .btn { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Directorio</h1>
+
+    <!-- MENÚ DE TABS -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="materias">📖 Materias</button>
+        <button class="tab-btn" data-tab="docentes">👨‍🏫 Docentes</button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB MATERIAS -->
+    <!-- ============================================================ -->
+    <div id="tab-materias" class="tab-content active">
+        <div id="materias-messages"></div>
+
+        <!-- Tabla -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Clave</th>
+                        <th>Nombre</th>
+                        <th>Créditos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="materias-table-body">
+                    <tr><td colspan="5" class="text-center text-muted">Cargando materias...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario Crear -->
+        <div class="form-card" id="materia-create-form">
+            <h3>➕ Nueva Materia</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mat-clave">Clave *</label>
+                    <input type="text" id="mat-clave" placeholder="Ej: TC1028" required>
+                </div>
+                <div class="form-group">
+                    <label for="mat-nombre">Nombre *</label>
+                    <input type="text" id="mat-nombre" placeholder="Ej: Programación en Python" required>
+                </div>
+                <div class="form-group">
+                    <label for="mat-creditos">Créditos</label>
+                    <input type="number" id="mat-creditos" placeholder="Ej: 5">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-success" id="mat-create-btn">Crear Materia</button>
+            </div>
+        </div>
+
+        <!-- Formulario Editar (oculto) -->
+        <div class="form-card hidden" id="materia-edit-form">
+            <h3>✏️ Editar Materia</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="mat-edit-clave">Clave *</label>
+                    <input type="text" id="mat-edit-clave" required>
+                </div>
+                <div class="form-group">
+                    <label for="mat-edit-nombre">Nombre *</label>
+                    <input type="text" id="mat-edit-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="mat-edit-creditos">Créditos</label>
+                    <input type="number" id="mat-edit-creditos">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" id="mat-edit-save-btn">Guardar Cambios</button>
+                <button class="btn btn-secondary" id="mat-edit-cancel-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB DOCENTES -->
+    <!-- ============================================================ -->
+    <div id="tab-docentes" class="tab-content">
+        <div id="docentes-messages"></div>
+
+        <!-- Tabla -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Materia ID</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="docentes-table-body">
+                    <tr><td colspan="5" class="text-center text-muted">Cargando docentes...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario Crear -->
+        <div class="form-card" id="docente-create-form">
+            <h3>➕ Nuevo Docente</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="doc-nombre">Nombre *</label>
+                    <input type="text" id="doc-nombre" placeholder="Ej: María González" required>
+                </div>
+                <div class="form-group">
+                    <label for="doc-email">Email *</label>
+                    <input type="email" id="doc-email" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="doc-materia-id">Materia ID</label>
+                    <input type="number" id="doc-materia-id" placeholder="ID de materia">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-success" id="doc-create-btn">Crear Docente</button>
+            </div>
+        </div>
+
+        <!-- Formulario Editar (oculto) -->
+        <div class="form-card hidden" id="docente-edit-form">
+            <h3>✏️ Editar Docente</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="doc-edit-nombre">Nombre *</label>
+                    <input type="text" id="doc-edit-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="doc-edit-email">Email *</label>
+                    <input type="email" id="doc-edit-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="doc-edit-materia-id">Materia ID</label>
+                    <input type="number" id="doc-edit-materia-id">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" id="doc-edit-save-btn">Guardar Cambios</button>
+                <button class="btn btn-secondary" id="doc-edit-cancel-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================================ -->
+    <script>
+        // ===== CONFIGURACIÓN =====
+        const API_BASE = 'http://localhost:3000/api/v1';
+
+        // ===== HELPERS =====
+        function showMessage(containerId, message, type = 'success') {
+            const container = document.getElementById(containerId);
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message message-${type}`;
+            msgDiv.innerHTML = `
+                <span>${message}</span>
+                <button class="close-msg" onclick="this.parentElement.remove()">&times;</button>
+            `;
+            container.appendChild(msgDiv);
+            // Auto-eliminar después de 6 segundos
+            setTimeout(() => {
+                if (msgDiv.parentNode) msgDiv.remove();
+            }, 6000);
+        }
+
+        function clearMessages(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+        }
+
+        function getVal(id) { return document.getElementById(id).value.trim(); }
+        function setVal(id, val) { document.getElementById(id).value = val !== null && val !== undefined ? val : ''; }
+        function show(id) { document.getElementById(id).classList.remove('hidden'); }
+        function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // ===== PETICIONES FETCH =====
+        async function apiRequest(method, endpoint, body = null) {
+            const url = `${API_BASE}${endpoint}`;
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            try {
+                const response = await fetch(url, options);
+                let data = null;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                }
+                return { response, data };
+            } catch (error) {
+                return { response: null, data: null, error: error.message };
+            }
+        }
+
+        // ================================================================
+        // MATERIAS
+        // ================================================================
+        let editingMateriaId = null;
+
+        async function loadMaterias() {
+            const tbody = document.getElementById('materias-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Cargando...</td></tr>';
+            clearMessages('materias-messages');
+
+            const { response, data, error } = await apiRequest('GET', '/materias');
+            if (error || !response || !response.ok) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Error al cargar materias</td></tr>`;
+                showMessage('materias-messages', 'Error al cargar materias', 'error');
+                return;
+            }
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay materias registradas</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = data.map(m => `
+                <tr>
+                    <td>${m.id}</td>
+                    <td><strong>${m.clave}</strong></td>
+                    <td>${m.nombre}</td>
+                    <td>${m.creditos !== null ? m.creditos : '-'}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn btn-warning btn-sm" onclick="editMateria(${m.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteMateria(${m.id})">Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function createMateria() {
+            const clave = getVal('mat-clave');
+            const nombre = getVal('mat-nombre');
+            const creditos = document.getElementById('mat-creditos').value;
+            if (!clave || !nombre) {
+                showMessage('materias-messages', 'Clave y nombre son requeridos', 'error');
+                return;
+            }
+            const body = { clave, nombre };
+            if (creditos !== '') body.creditos = parseInt(creditos);
+
+            const { response, data, error } = await apiRequest('POST', '/materias', body);
+            if (error || !response || !response.ok) {
+                const msg = data?.message || 'Error al crear materia';
+                showMessage('materias-messages', msg, 'error');
+                return;
+            }
+            showMessage('materias-messages', `Materia "${data.nombre}" creada exitosamente`, 'success');
+            document.getElementById('mat-clave').value = '';
+            document.getElementById('mat-nombre').value = '';
+            document.getElementById('mat-creditos').value = '';
+            loadMaterias();
+        }
+
+        async function editMateria(id) {
+            const { response, data, error } = await apiRequest('GET', `/materias/${id}`);
+            if (error || !response || !response.ok) {
+                showMessage('materias-messages', 'No se pudo cargar la materia para editar', 'error');
+                return;
+            }
+            editingMateriaId = id;
+            setVal('mat-edit-clave', data.clave);
+            setVal('mat-edit-nombre', data.nombre);
+            setVal('mat-edit-creditos', data.creditos !== null ? data.creditos : '');
+            show('materia-edit-form');
+            hide('materia-create-form');
+            // Scroll al formulario
+            document.getElementById('materia-edit-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function saveEditMateria() {
+            const id = editingMateriaId;
+            if (!id) return;
+            const clave = getVal('mat-edit-clave');
+            const nombre = getVal('mat-edit-nombre');
+            const creditos = document.getElementById('mat-edit-creditos').value;
+            if (!clave || !nombre) {
+                showMessage('materias-messages', 'Clave y nombre son requeridos', 'error');
+                return;
+            }
+            const body = { clave, nombre };
+            if (creditos !== '') body.creditos = parseInt(creditos);
+
+            const { response, data, error } = await apiRequest('PUT', `/materias/${id}`, body);
+            if (error || !response || !response.ok) {
+                const msg = data?.message || 'Error al actualizar materia';
+                showMessage('materias-messages', msg, 'error');
+                return;
+            }
+            showMessage('materias-messages', `Materia "${data.nombre}" actualizada`, 'success');
+            cancelEditMateria();
+            loadMaterias();
+        }
+
+        function cancelEditMateria() {
+            editingMateriaId = null;
+            hide('materia-edit-form');
+            show('materia-create-form');
+        }
+
+        async function deleteMateria(id) {
+            if (!confirm(`¿Estás seguro de eliminar la materia con ID ${id}?`)) return;
+            const { response, data, error } = await apiRequest('DELETE', `/materias/${id}`);
+            if (error || !response || !response.ok) {
+                const msg = data?.message || 'Error al eliminar materia';
+                showMessage('materias-messages', msg, 'error');
+                return;
+            }
+            showMessage('materias-messages', `Materia ID ${id} eliminada`, 'success');
+            loadMaterias();
+        }
+
+        // ================================================================
+        // DOCENTES
+        // ================================================================
+        let editingDocenteId = null;
+
+        async function loadDocentes() {
+            const tbody = document.getElementById('docentes-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Cargando...</td></tr>';
+            clearMessages('docentes-messages');
+
+            const { response, data, error } = await apiRequest('GET', '/docentes');
+            if (error || !response || !response.ok) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">Error al cargar docentes</td></tr>`;
+                showMessage('docentes-messages', 'Error al cargar docentes', 'error');
+                return;
+            }
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No hay docentes registrados</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = data.map(d => `
+                <tr>
+                    <td>${d.id}</td>
+                    <td><strong>${d.nombre}</strong></td>
+                    <td>${d.email}</td>
+                    <td>${d.materia_id !== null ? d.materia_id : '-'}</td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="btn btn-warning btn-sm" onclick="editDocente(${d.id})">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteDocente(${d.id})">Eliminar</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function createDocente() {
+            const nombre = getVal('doc-nombre');
+            const email = getVal('doc-email');
+            const materiaId = document.getElementById('doc-materia-id').value;
+            if (!nombre || !email) {
+                showMessage('docentes-messages', 'Nombre y email son requeridos', 'error');
+                return;
+            }
+            const body = { nombre, email };
+            if (materiaId !== '') body.materia_id = parseInt(materiaId);
+
+            const { response, data, error } = await apiRequest('POST', '/docentes', body);
+            if (error || !response || !response.ok) {
+                const msg = data?.message || 'Error al crear docente';
+                showMessage('docentes-messages', msg, 'error');
+                return;
+            }
+            showMessage('docentes-messages', `Docente "${data.nombre}" creado`, 'success');
+            document.getElementById('doc-nombre').value = '';
+            document.getElementById('doc-email').value = '';
+            document.getElementById('doc-materia-id').value = '';
+            loadDocentes();
+        }
+
+        async function editDocente(id) {
+            const { response, data, error } = await apiRequest('GET', `/docentes/${id}`);
+            if (error || !response || !response.ok) {
+                showMessage('docentes-messages', 'No se pudo cargar el docente para editar', 'error');
+                return;
+            }
+            editingDocenteId = id;
+            setVal('doc-edit-nombre', data.nombre);
+            setVal('doc-edit-email', data.email);
+            setVal('doc-edit-materia-id', data.materia_id !== null ? data.materia_id : '');
+            show('docente-edit-form');
+            hide('docente-create-form');
+            document.getElementById('docente-edit-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function saveEditDocente() {
+            const id = editingDocenteId;
+            if (!id) return;
+            const nombre = getVal('doc-edit-nombre');
+            const email = getVal('doc-edit-email');
+            const materiaId = document.getElementById('doc-edit-materia-id').value;
+            if (!nombre || !email) {
+                showMessage('docentes-messages', 'Nombre y email son requeridos', 'error');
+                return;
+            }
+            const body = { nombre, email };
+            if (materiaId !== '') body.materia_id = parseInt(materiaId);
+
+            const { response, data, error } = await apiRequest('PUT', `/docentes/${id}`, body);
+            if (error || !response || !response.ok) {
+                const msg = data?.message || 'Error al actualizar docente';
+                showMessage('docentes-messages', msg, 'error');
+                return;
+            }
+            showMessage('docentes-messages', `Docente "${data.nombre}" actualizado`, 'success');
+            cancelEditDocente();
+            loadDocentes();
+        }
+
+        function cancelEditDocente() {
+            editingDocenteId = null;
+            hide('docente-edit-form');
+            show('docente-create-form');
+        }
+
+        async function deleteDocente(id) {
+            if (!confirm(`¿Estás seguro de eliminar al docente con ID ${id}?`)) return;
+            const { response, data, error } = await apiRequest('DELETE', `/docentes/${id}`);
+            if (error || !response || !response.ok) {
+                const msg = data?.message || 'Error al eliminar docente';
+                showMessage('docentes-messages', msg, 'error');
+                return;
+            }
+            showMessage('docentes-messages', `Docente ID ${id} eliminado`, 'success');
+            loadDocentes();
+        }
+
+        // ================================================================
+        // TABS
+        // ================================================================
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Cambiar active en tabs
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                // Mostrar contenido
+                const tabName = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById(`tab-${tabName}`).classList.add('active');
+
+                // Cargar datos según tab
+                if (tabName === 'materias') loadMaterias();
+                else loadDocentes();
+            });
+        });
+
+        // ================================================================
+        // EVENT LISTENERS
+        // ================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar tab inicial (materias)
+            loadMaterias();
+
+            // Materias
+            document.getElementById('mat-create-btn').addEventListener('click', createMateria);
+            document.getElementById('mat-edit-save-btn').addEventListener('click', saveEditMateria);
+            document.getElementById('mat-edit-cancel-btn').addEventListener('click', cancelEditMateria);
+
+            // Docentes
+            document.getElementById('doc-create-btn').addEventListener('click', createDocente);
+            document.getElementById('doc-edit-save-btn').addEventListener('click', saveEditDocente);
+            document.getElementById('doc-edit-cancel-btn').addEventListener('click', cancelEditDocente);
+
+            // Permitir Enter en formularios
+            document.getElementById('mat-clave').addEventListener('keydown', e => { if (e.key === 'Enter') createMateria(); });
+            document.getElementById('mat-nombre').addEventListener('keydown', e => { if (e.key === 'Enter') createMateria(); });
+            document.getElementById('mat-creditos').addEventListener('keydown', e => { if (e.key === 'Enter') createMateria(); });
+            document.getElementById('doc-nombre').addEventListener('keydown', e => { if (e.key === 'Enter') createDocente(); });
+            document.getElementById('doc-email').addEventListener('keydown', e => { if (e.key === 'Enter') createDocente(); });
+            document.getElementById('doc-materia-id').addEventListener('keydown', e => { if (e.key === 'Enter') createDocente(); });
+        });
+    </script>
+
+</body>
+</html>
