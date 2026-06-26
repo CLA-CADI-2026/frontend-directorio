@@ -1,5 +1,12 @@
 # Directorio Frontend: Instrucciones para reproducir el proyecto
 
+## Autores (Equipo 6):
+* Aram Baruch González Pérez
+* Pedro Hernández Oregel
+* Roberto Martínez Román
+
+
+
 Este repositorio contiene un frontend en HTML, CSS y JavaScript puro para gestionar materias y docentes mediante una API REST.
 
 ## 1. Requisitos
